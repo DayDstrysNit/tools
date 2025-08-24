@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <!-- 
+        Subprocessor Viewer v1.0
+        Released: May 15, 2025
+        
+        A simple, searchable viewer for JSON-based subprocessor data
+        with responsive card layout and modern styling.
+    -->
+    <title>Subprocessor Viewer v1.0</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary-blue: #007BFF;
+            --light-gray: #f5f5f5;
+        }
+
+        body {
+            margin: 0;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+        }
+
+        .ip-navbar {
+            background: var(--primary-blue);
+            padding: 1rem;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            border-bottom-left-radius: 20px;
+            border-bottom-right-radius: 20px;
+        }
+
+        .ip-search-container {
+            display: flex;
+            align-items: center;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 4px;
+            padding: 0.5rem 1rem;
+            width: 300px;
+        }
+
+        .ip-search-icon {
+            width: 20px;
+            height: 20px;
+            filter: brightness(0) invert(1);
+            margin-right: 8px;
+        }
+
+        .ip-search-bar {
+            border: none;
+            background: transparent;
+            color: white;
+            width: 100%;
+            outline: none;
+            font-size: 16px;
+        }
+
+        .ip-search-bar::placeholder {
+            color: rgba(255, 255, 255, 0.8);
+        }
+
+        .ip-container {
+            padding: 2rem;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .card {
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+            padding: 2rem 1.5rem;
+            margin: 1rem;
+        }
+
+        .card h3 {
+            margin: 0 0 1.618rem 0;
+            color: var(--primary-blue);
+            font-size: 1.75rem; /* Reduced from 2.25rem */
+            font-weight: 700;
+            letter-spacing: -0.02em;
+            border-bottom: 2px solid var(--light-gray);
+            padding-bottom: 1rem;
+            line-height: 1.2;
+            text-align: left;
+        }
+
+        .card .label {
+            color: #444;
+            font-size: 1.25rem; /* Larger section headings */
+            font-weight: 600;
+            margin-bottom: 0.4rem;
+            letter-spacing: -0.01em;
+            text-align: left;
+        }
+
+        .card .value {
+            color: #333;
+            margin-bottom: 1.5rem;
+            font-size: 1rem; /* Standard content size */
+            line-height: 1.5;
+            text-align: left;
+            font-weight: 400;
+        }
+
+        .card .empty {
+            color: #999;
+            font-style: italic;
+            font-size: 1rem; /* Match content size */
+            font-weight: 400;
+        }
+
+        #output {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 1rem;
+            padding: 1rem;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 2rem;
+            font-size: 1.2rem;
+            color: #666;
+        }
+
+        .error {
+            color: #dc3545;
+            text-align: center;
+            padding: 2rem;
+        }
+    </style>
+</head>
+<body>
+    <div class="ip-navbar">
+        <div class="ip-search-container">
+            <img src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyNCIgaGVpZ2h0PSIyNCIgdmlld0JveD0iMCAwIDI0IDI0IiBmaWxsPSJub25lIiBzdHJva2U9ImN1cnJlbnRDb2xvciIgc3Ryb2tlLXdpZHRoPSIyIiBzdHJva2UtbGluZWNhcD0icm91bmQiIHN0cm9rZS1saW5lam9pbj0icm91bmQiPjxjaXJjbGUgY3g9IjExIiBjeT0iMTEiIHI9IjgiPjwvY2lyY2xlPjxsaW5lIHgxPSIyMSIgeTE9IjIxIiB4Mj0iMTYuNjUiIHkyPSIxNi42NSI+PC9saW5lPjwvc3ZnPg==" class="ip-search-icon" alt="Search">
+            <input type="text" id="search-input" placeholder="Search subprocessors..." class="ip-search-bar">
+        </div>
+    </div>
+
+    <div id="json-container" data-json='[integrations_json]'></div>
+    <div class="ip-container">
+        <div id="output" class="loading">Loading data...</div>
+    </div>
+
+    <script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const container = document.getElementById('json-container');
+        const output = document.getElementById('output');
+        const searchInput = document.getElementById('search-input');
+        let jsonData = [];
+        
+        // Load and parse the data
+        if (container) {
+            try {
+                const rawData = container.getAttribute('data-json');
+                console.log('Raw data:', rawData);
+                
+                jsonData = JSON.parse(rawData || '[]');
+                console.log('Parsed data:', jsonData);
+                
+                displayData(jsonData);
+            } catch (error) {
+                output.innerHTML = '<div class="error">Error parsing data</div>';
+                console.error('Parse error:', error);
+            }
+        }
+
+        // Function to format location
+        function formatLocation(city, country) {
+            const parts = [city, country].filter(part => part && part.trim());
+            return parts.length > 0 ? parts.join(', ') : '<span class="empty">N/A</span>';
+        }
+
+        // Function to display filtered data
+        function displayData(data) {
+            if (Array.isArray(data) && data.length > 0) {
+                output.innerHTML = data.map(item => `
+                    <div class="card">
+                        <h3>${item['Sub-processor'] || 'Unknown'}</h3>
+                        <div class="label">Product</div>
+                        <div class="value">${item['Product'] || '<span class="empty">N/A</span>'}</div>
+                        
+                        <div class="label">Applicable Service(s)</div>
+                        <div class="value">${item['Applicable Service(s)'] || '<span class="empty">N/A</span>'}</div>
+                        
+                        <div class="label">Nature and Purpose of Processing</div>
+                        <div class="value">${item['Nature and Purpose of Processing'] || '<span class="empty">N/A</span>'}</div>
+                        
+                        <div class="label">Location</div>
+                        <div class="value">${formatLocation(item['Location (City)'], item['Location (Country)'])}</div>
+                        
+                        <div class="label">Subject Matter / Categories of Personal Data</div>
+                        <div class="value">${item['Subject Matter / Categories of personal data?'] || '<span class="empty">N/A</span>'}</div>
+                        
+                        ${item['Privacy Policy'] ? `
+                            <div class="label">Privacy Policy</div>
+                            <div class="value"><a href="${item['Privacy Policy']}" target="_blank" rel="noopener">View Policy</a></div>
+                        ` : ''}
+                    </div>
+                `).join('');
+                
+                console.log(`Displayed ${data.length} items`);
+            } else {
+                output.innerHTML = '<div class="error">No matching items found</div>';
+                console.log('No data or empty array');
+            }
+        }
+
+        // Search functionality
+        searchInput.addEventListener('input', function(e) {
+            const searchTerm = e.target.value.toLowerCase();
+            const filteredData = jsonData.filter(item => {
+                return Object.values(item).some(value => 
+                    value && value.toString().toLowerCase().includes(searchTerm)
+                );
+            });
+            displayData(filteredData);
+        });
+    });
+    </script>
+</body>
+</html>
