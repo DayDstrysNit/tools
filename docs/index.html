@@ -1,261 +1,231 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>CSV to JSON Converter - murphk.com</title>
-    <meta name="description"
-        content="Free online tool to convert CSV files to JSON format. Drag and drop CSV files for instant conversion with pretty printing options.">
-    <script src="https://unpkg.com/papaparse@5.4.1/papaparse.min.js"></script>
+    <title>Developer Tools Collection</title>
+    <meta name="description" content="A collection of useful web-based developer tools and utilities. All tools run locally in your browser.">
     <style>
         body {
             font-family: system-ui, -apple-system, sans-serif;
-            max-width: 800px;
-            margin: 20px auto;
-            padding: 0 20px;
-            line-height: 1.5;
-        }
-
-        /* Force vertical layout - override any parent styles */
-        .jsoner-container *:not(script):not(style) {
-            display: block !important;
-            width: auto !important;
-            float: none !important;
-            flex: none !important;
-        }
-
-        .jsoner-container {
-            display: block !important;
-            width: 100% !important;
-            max-width: 800px !important;
-            margin: 0 auto !important;
-        }
-
-        .jsoner-container h1,
-        .jsoner-container p,
-        .jsoner-container .drop-zone,
-        .jsoner-container .controls,
-        .jsoner-container pre {
-            display: block !important;
-            width: 100% !important;
-            margin-bottom: 20px !important;
-            box-sizing: border-box !important;
-        }
-
-        .drop-zone {
-            border: 2px dashed #ccc;
-            border-radius: 4px;
+            max-width: 1200px;
+            margin: 0 auto;
             padding: 20px;
+            line-height: 1.6;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+        }
+
+        .container {
+            background: white;
+            border-radius: 12px;
+            padding: 40px;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.1);
+        }
+
+        h1 {
+            color: #2c3e50;
             text-align: center;
-            margin: 20px 0;
-            cursor: pointer;
+            margin-bottom: 10px;
+            font-size: 2.5em;
         }
 
-        .drop-zone:hover {
-            border-color: #666;
-            background-color: #f9f9f9;
+        .subtitle {
+            text-align: center;
+            color: #7f8c8d;
+            margin-bottom: 40px;
+            font-size: 1.2em;
         }
 
-        button {
-            background-color: #0066cc;
-            color: white;
-            border: none;
-            padding: 8px 16px;
-            border-radius: 4px;
-            cursor: pointer;
-            margin: 5px;
+        .tools-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 24px;
+            margin-top: 30px;
         }
 
-        button:hover {
-            background-color: #0052a3;
+        .tool-card {
+            border: 2px solid #e9ecef;
+            border-radius: 8px;
+            padding: 24px;
+            text-decoration: none;
+            color: inherit;
+            transition: all 0.3s ease;
+            background: #f8f9fa;
         }
 
-        #output {
-            background-color: #f5f5f5;
-            border: 1px solid #ddd;
-            border-radius: 4px;
-            padding: 15px;
-            white-space: pre-wrap;
-            max-height: 400px;
-            overflow: auto;
-            margin-top: 20px;
+        .tool-card:hover {
+            border-color: #667eea;
+            transform: translateY(-4px);
+            box-shadow: 0 8px 25px rgba(102, 126, 234, 0.15);
+            background: white;
         }
 
-        .controls {
-            margin: 20px 0;
-            display: block !important;
+        .tool-icon {
+            font-size: 2.5em;
+            margin-bottom: 16px;
+            display: block;
         }
 
-        .controls label,
-        .controls button {
-            display: inline-block !important;
-            margin-right: 10px !important;
-            vertical-align: middle !important;
+        .tool-title {
+            font-size: 1.3em;
+            font-weight: 600;
+            margin-bottom: 8px;
+            color: #2c3e50;
         }
 
-        .hidden {
-            display: none;
+        .tool-description {
+            color: #6c757d;
+            margin-bottom: 12px;
         }
 
-        .success-indicator {
+        .tool-tags {
+            display: flex;
+            gap: 6px;
+            flex-wrap: wrap;
+        }
+
+        .tag {
+            background: #e9ecef;
+            color: #495057;
+            padding: 4px 8px;
+            border-radius: 12px;
+            font-size: 0.8em;
+            font-weight: 500;
+        }
+
+        .coming-soon {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+
+        .coming-soon:hover {
+            transform: none;
+            border-color: #e9ecef;
+            box-shadow: none;
+        }
+
+        .badge {
             display: inline-block;
-            color: #22c55e;
+            background: #28a745;
+            color: white;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 0.7em;
+            font-weight: 600;
+            text-transform: uppercase;
             margin-left: 8px;
-            opacity: 0;
-            transition: opacity 0.3s ease-in-out;
         }
 
-        .success-indicator.show {
-            opacity: 1;
+        .badge.new {
+            background: #17a2b8;
+        }
+
+        footer {
+            text-align: center;
+            margin-top: 50px;
+            padding-top: 30px;
+            border-top: 1px solid #e9ecef;
+            color: #6c757d;
+        }
+
+        @media (max-width: 768px) {
+            body {
+                padding: 10px;
+            }
+            
+            .container {
+                padding: 20px;
+            }
+            
+            h1 {
+                font-size: 2em;
+            }
+            
+            .tools-grid {
+                grid-template-columns: 1fr;
+            }
         }
     </style>
 </head>
-
 <body>
-    <div class="jsoner-container">
-        <h1>CSV to JSON Converter</h1>
-        <p style="color: #666; margin-bottom: 20px;">Convert your CSV files to JSON format instantly. No data leaves
-            your browser - everything is processed locally.</p>
+    <div class="container">
+        <h1>🛠️ Developer Tools</h1>
+        <p class="subtitle">A collection of useful web-based utilities. All tools run locally in your browser - no data leaves your device.</p>
 
-        <div class="drop-zone" id="dropZone">
-            <p>Drag and drop a CSV file here<br>or</p>
-            <button onclick="document.getElementById('fileInput').click()">Choose File</button>
-            <input type="file" id="fileInput" accept=".csv" class="hidden">
+        <div class="tools-grid">
+            <a href="./jsoner/" class="tool-card">
+                <span class="tool-icon">📊</span>
+                <div class="tool-title">JSONer <span class="badge">Live</span></div>
+                <div class="tool-description">Convert CSV files to JSON format instantly. Drag and drop files for quick conversion with pretty printing options.</div>
+                <div class="tool-tags">
+                    <span class="tag">CSV</span>
+                    <span class="tag">JSON</span>
+                    <span class="tag">Converter</span>
+                    <span class="tag">Data</span>
+                </div>
+            </a>
+
+            <!-- Placeholder for future tools -->
+            <div class="tool-card coming-soon">
+                <span class="tool-icon">🎨</span>
+                <div class="tool-title">Color Palette Generator <span class="badge new">Coming Soon</span></div>
+                <div class="tool-description">Generate beautiful color palettes for your projects with various harmony rules and export options.</div>
+                <div class="tool-tags">
+                    <span class="tag">Colors</span>
+                    <span class="tag">Design</span>
+                    <span class="tag">CSS</span>
+                </div>
+            </div>
+
+            <div class="tool-card coming-soon">
+                <span class="tool-icon">🔑</span>
+                <div class="tool-title">Password Generator <span class="badge new">Coming Soon</span></div>
+                <div class="tool-description">Generate secure passwords with customizable length, character sets, and strength requirements.</div>
+                <div class="tool-tags">
+                    <span class="tag">Security</span>
+                    <span class="tag">Passwords</span>
+                    <span class="tag">Generator</span>
+                </div>
+            </div>
+
+            <div class="tool-card coming-soon">
+                <span class="tool-icon">📏</span>
+                <div class="tool-title">Unit Converter <span class="badge new">Coming Soon</span></div>
+                <div class="tool-description">Convert between different units of measurement including length, weight, temperature, and more.</div>
+                <div class="tool-tags">
+                    <span class="tag">Units</span>
+                    <span class="tag">Conversion</span>
+                    <span class="tag">Calculator</span>
+                </div>
+            </div>
+
+            <div class="tool-card coming-soon">
+                <span class="tool-icon">🔗</span>
+                <div class="tool-title">URL Shortener <span class="badge new">Coming Soon</span></div>
+                <div class="tool-description">Create short, memorable URLs with click tracking and custom aliases. All processing done locally.</div>
+                <div class="tool-tags">
+                    <span class="tag">URLs</span>
+                    <span class="tag">Links</span>
+                    <span class="tag">Shortener</span>
+                </div>
+            </div>
+
+            <div class="tool-card coming-soon">
+                <span class="tool-icon">🎯</span>
+                <div class="tool-title">Lorem Ipsum Generator <span class="badge new">Coming Soon</span></div>
+                <div class="tool-description">Generate placeholder text in multiple languages and formats for your design and development projects.</div>
+                <div class="tool-tags">
+                    <span class="tag">Text</span>
+                    <span class="tag">Placeholder</span>
+                    <span class="tag">Generator</span>
+                </div>
+            </div>
         </div>
 
-        <div class="controls">
-            <label>
-                <input type="checkbox" id="formatToggle" checked>
-                Pretty Print JSON
-            </label>
-            <button id="copyButton" style="display: none;">Copy to Clipboard</button>
-            <button id="downloadButton" style="display: none;">Download JSON</button>
-            <span class="success-indicator" id="copySuccess">✓</span>
-        </div>
-
-        <pre id="output"></pre>
+        <footer>
+            <p>All tools are client-side only - your data never leaves your browser. Open source and privacy-focused.</p>
+        </footer>
     </div>
-
-    <script>
-    const dropZone = document.getElementById('dropZone');
-    const fileInput = document.getElementById('fileInput');
-    const formatToggle = document.getElementById('formatToggle');
-    const output = document.getElementById('output');
-    const copyButton = document.getElementById('copyButton');
-    const downloadButton = document.getElementById('downloadButton');
-    let currentData = null;
-
-    // Prevent default drag behaviors
-    ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
-      dropZone.addEventListener(eventName, preventDefaults, false);
-      document.body.addEventListener(eventName, preventDefaults, false);
-    });
-
-    function preventDefaults(e) {
-      e.preventDefault();
-      e.stopPropagation();
-    }
-
-    // Handle dropped files
-    dropZone.addEventListener('drop', handleDrop, false);
-    fileInput.addEventListener('change', handleFileSelect, false);
-
-    function handleDrop(e) {
-      const dt = e.dataTransfer;
-      const files = dt.files;
-      handleFiles(files);
-    }
-
-    function handleFileSelect(e) {
-      const files = e.target.files;
-      handleFiles(files);
-    }
-
-    function handleFiles(files) {
-      const file = files[0];
-      if (file && (file.type === 'text/csv' || file.name.endsWith('.csv'))) {
-        Papa.parse(file, {
-          header: true,
-          skipEmptyLines: true,
-          transformHeader: function (header) {
-            // Remove empty headers or headers that are "null"
-            if (!header || !header.trim() || header === 'null') {
-              return null;
-            }
-
-            // Normalize the "Subject Matter" column header with strict pattern matching
-            if (header.match(/subject\s*matter|categories\s*of\s*personal\s*data/i)) {
-              return 'Subject Matter / Categories of personal data?';
-            }
-            return header;
-          },
-          complete: function (results) {
-            if (results.errors.length > 0) {
-              output.textContent = 'Error parsing CSV: ' + results.errors[0].message;
-              return;
-            }
-
-            // Filter out columns with null headers and normalize empty values
-            currentData = results.data.map(row => {
-              const filteredRow = {};
-              Object.entries(row).forEach(([key, value]) => {
-                if (key && key !== 'null' && key.trim()) {
-                  // Use the same strict pattern matching for the key normalization
-                  const normalizedKey = key.match(/subject\s*matter|categories\s*of\s*personal\s*data/i)
-                    ? 'Subject Matter / Categories of personal data?'
-                    : key;
-                  filteredRow[normalizedKey] = value || '';
-                }
-              });
-              return filteredRow;
-            });
-
-            updateOutput();
-            copyButton.style.display = 'inline-block';
-            downloadButton.style.display = 'inline-block';
-          },
-          error: function (error) {
-            output.textContent = 'Error parsing CSV: ' + error.message;
-          }
-        });
-      } else {
-        alert('Please select a CSV file');
-      }
-    }
-
-    function updateOutput() {
-      if (!currentData) return;
-      const spacing = formatToggle.checked ? 2 : 0;
-      output.textContent = JSON.stringify(currentData, null, spacing);
-    }
-
-    formatToggle.addEventListener('change', updateOutput);
-
-    copyButton.addEventListener('click', () => {
-      navigator.clipboard.writeText(output.textContent)
-        .then(() => {
-          const successIndicator = document.getElementById('copySuccess');
-          successIndicator.classList.add('show');
-          setTimeout(() => {
-            successIndicator.classList.remove('show');
-          }, 5000);
-        })
-        .catch(err => console.error('Failed to copy:', err));
-    });
-
-    downloadButton.addEventListener('click', () => {
-      const blob = new Blob([output.textContent], { type: 'application/json' });
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement('a');
-      a.href = url;
-      a.download = 'converted.json';
-      document.body.appendChild(a);
-      a.click();
-      document.body.removeChild(a);
-      URL.revokeObjectURL(url);
-    });
-    </script>
 </body>
-
 </html>

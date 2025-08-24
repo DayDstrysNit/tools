@@ -13,10 +13,10 @@ export default defineConfig({
       ],
     },
   },
-  // Build into the repo-level `docs/` folder so GitHub Pages can serve it from the main branch
+  // Build into the repo-level `docs/jsoner/` folder so GitHub Pages can serve it from the main branch
   base: './',
   build: {
-    outDir: '../docs',
+    outDir: '../docs/jsoner',
     emptyOutDir: true,
     assetsDir: 'assets'
   }
